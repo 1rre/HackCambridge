@@ -2,3 +2,5 @@ priv/
 .metals/
 out/
 .vscode/
+SpeakCode/src/Priv.scala
+.bloop/
