@@ -6,12 +6,18 @@ import SpeechParser.{NoMatch, Match}
 
 class CodeWindow(val asJS: html.Div) {
   def update(): Unit = {
-    val input = Main.Transcript.children(0).innerText.toLowerCase
+    val input = Main.Transcript.children(0).innerText.toLowerCase + "  "
     val (text, lang) = {
-      val x = SpeechParser.introAndname.parse(input)
+      val x = (SpeechParser.header).parse(input)
       println(x)
       x match {
-        case Match(_, (Java, name)) => (s"public static void $name {}\n", "java")
+        case Match(_, (Java, name, args, rtn)) => (s"public static $rtn $name${args.zipWithIndex.map((x,y)=>s"$x x$y").mkString("(", ", ", ")")} {}\n", "java")
+        case Match(_, (Python, name, args, _)) => (s"def $name${args.zipWithIndex.map((x,y)=>s"x$y").mkString("(", ", ", ")")}:\n  0\n", "python")
+        case Match(_, (Ruby, name, args, _)) => (s"def $name${args.zipWithIndex.map((x,y)=>s"x$y").mkString("(", ", ", ")")} do\nend\n", "ruby")
+        case Match(_, (Java, name, args)) => (s"public static void $name${args.zipWithIndex.map((x,y)=>s"$x x$y").mkString("(", ", ", ")")} {}\n", "java")
+        case Match(_, (Python, name, args)) => (s"def $name${args.zipWithIndex.map((x,y)=>s"x$y").mkString("(", ", ", ")")}:\n  0\n", "python")
+        case Match(_, (Ruby, name, args)) => (s"def $name${args.zipWithIndex.map((x,y)=>s"x$y").mkString("(", ", ", ")")} do\nend\n", "ruby")
+        case Match(_, (Java, name)) => (s"public static void $name() {}\n", "java")
         case Match(_, (Python, name)) => (s"def $name():\n  0\n", "python")
         case Match(_, (Ruby, name)) => (s"def $name do\nend\n", "ruby")
         case NoMatch(_) => ("", "plaintext")
@@ -21,7 +27,6 @@ class CodeWindow(val asJS: html.Div) {
     for (c <- asJS.children) asJS.removeChild(c)
     for (c <- asJS.children) asJS.removeChild(c)
     for (c <- CodeLine.split(text)) asJS.appendChild(c)
-    
     updateLineNums()
     highlight(lang)
 

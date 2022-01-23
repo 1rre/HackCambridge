@@ -22,4 +22,7 @@ object Main extends App {
       Output.update()
     })
   }
+  val x = "a string and an integer "
+  //"takes five arguments an integer an integer a string an integer and an integer"
+  println(SpeechParser.args(2).parse(x))
 }
