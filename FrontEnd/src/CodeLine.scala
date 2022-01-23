@@ -27,7 +27,6 @@ object CodeLine {
 }
 
 class CodeLine(window: CodeWindow, val asJS: html.Element) {
-  println(asJS.innerHTML)
   val code = asJS.children(1).children(0).asInstanceOf[html.Element]
   def highlight(lang: String): Unit = {
     code.className = s"language-${lang}"

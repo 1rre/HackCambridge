@@ -3,14 +3,28 @@ import org.scalajs.dom.html
 
 import SpeechParser.{Python, Ruby, Java}
 import SpeechParser.{NoMatch, Match}
+import SpeechParser.Command
+import SpeechParser.PrintArg
 
 class CodeWindow(val asJS: html.Div) {
+  def resolveJava(cmd: Command): String = cmd match {
+    case PrintArg(i: Int) => s"System.out.println(x${i-1})"
+  }
+  def resolvePy(cmd: Command): String = cmd match {
+    case PrintArg(i: Int) => s"print(x${i-1})"
+  }
+  def resolveRuby(cmd: Command): String = cmd match {
+    case PrintArg(i: Int) => s"puts x${i-1}.inspect"
+  }
   def update(): Unit = {
-    val input = Main.Transcript.children(0).innerText.toLowerCase + "  "
+    val input = Main.Transcript.children(0).innerText.toLowerCase.filterNot(_ == ',')
     val (text, lang) = {
-      val x = (SpeechParser.header).parse(input)
+      val x = (SpeechParser.fullFn).parse("""\s+""".r.replaceAllIn(input," "))
       println(x)
       x match {
+        case Match(_, (Java, name, args, rtn, i)) => (s"public static $rtn $name${args.zipWithIndex.map((x,y)=>s"$x x$y").mkString("(", ", ", ")")} {\n  ${i.map(resolveJava).map(_ + ";").mkString("\n  ")}\n}\n", "java")
+        case Match(_, (Python, name, args, _, i)) => (s"def $name${args.zipWithIndex.map((x,y)=>s"x$y").mkString("(", ", ", ")")}:\n  ${i.map(resolvePy).mkString("\n  ")}\n", "python")
+        case Match(_, (Ruby, name, args, _, i)) => (s"def $name${args.zipWithIndex.map((x,y)=>s"x$y").mkString("(", ", ", ")")} do\n  ${i.map(resolveRuby).mkString("\n  ")}\nend\n", "ruby")
         case Match(_, (Java, name, args, rtn)) => (s"public static $rtn $name${args.zipWithIndex.map((x,y)=>s"$x x$y").mkString("(", ", ", ")")} {}\n", "java")
         case Match(_, (Python, name, args, _)) => (s"def $name${args.zipWithIndex.map((x,y)=>s"x$y").mkString("(", ", ", ")")}:\n  0\n", "python")
         case Match(_, (Ruby, name, args, _)) => (s"def $name${args.zipWithIndex.map((x,y)=>s"x$y").mkString("(", ", ", ")")} do\nend\n", "ruby")

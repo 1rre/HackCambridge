@@ -4,6 +4,11 @@ import js.JSConverters._
 import io.scalajs.nodejs.buffer.Blob
 import io.scalajs.nodejs.setTimeout
 
+@js.native
+@JSGlobal
+class ResponseTag extends js.Any {
+  def send(s: String): Unit = js.native
+}
 object Main extends App {
   val File = ("./assets/speech.wav")
   println(File)
@@ -25,6 +30,13 @@ object Main extends App {
   })
   trans.addListener("transcriptReceived", {t: js.Any => 
     println(t)
+  })
+  val expr = express.apply()
+  expr.listen(4218)
+  expr.get("/", (x: js.Any, y: ResponseTag) => y.send("Hello!"))
+  expr.post("/", (x: js.Any, y: ResponseTag) => {
+    println("afsalf")
+    println("safnsa")
   })
 }
 

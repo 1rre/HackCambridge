@@ -19,7 +19,6 @@ object SpeakCode extends ScalaJSModule {
   def scalacOptions = Seq("-deprecation")
   def moduleKind = ModuleKind.CommonJSModule
   def ivyDeps = Agg(
-    ivy"org.scala-js:scalajs-dom_sjs1::1.1.0",
     ivy"net.exoego::scala-js-nodejs-v16_sjs1:0.14.0"
   )
 }

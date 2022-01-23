@@ -16,6 +16,7 @@ html, body {
 .menubar {
   width: 100%;
   background-color: navy;
+  color: white;
   display: flex;
 }
 .menubar h1 {
@@ -23,7 +24,6 @@ html, body {
   margin-bottom: 5px;
   margin-left: 20px;
   margin-right: 20px;
-  color: white;
 }
 .menu-item {
   float: right;
@@ -51,6 +51,9 @@ html, body {
   margin-top: 0 !important;
   margin-bottom: 0 !important;
   font-size: 16px;
+}
+#stop-button {
+  color: grey;
 }
 #text-transcript {
   border-right: 5px solid slategray;
